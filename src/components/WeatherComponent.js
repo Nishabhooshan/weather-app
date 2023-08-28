@@ -24,16 +24,16 @@ function getImageUrl(weatherType){
 const WeatherComponent = () => {
   const [city, setCity] = useState('');
   const [weatherData, setWeatherData] = useState([]);
-  const [currentTemperature, setCurrentTemperature] = useState('')
+  const [currentTemperature, setCurrentTemperature] = useState('');
   const handleCall = async () => {
     let currentValue = document.getElementById('cityId').value;
+    
     const newData = await getWeatherData(currentValue);
+    console.log(JSON.stringify(newData));
     setWeatherData(newData);
     document.getElementById('cityId').value = '';
     setCurrentTemperature(newData.length>0?newData[0]['currentTemperature']:"");
-    setCity(newData.length>0?currentValue:"Enter correct city name" );
-
-
+    setCity(newData.length>0?currentValue:"Enter valid city name" );
   }
   const handleKeyEnter = e => {
     // e.preventDefault();
@@ -44,8 +44,6 @@ const WeatherComponent = () => {
   let city_color = "white";
   let dynamicClassName = 'app-bg';
   if (weatherData.length > 0){
-    
-    weatherData.shift()
     let weatherCondition = weatherData[0]['weather']
     if (currentTemperature < 18) {
         dynamicClassName = 'app-bg winter';
@@ -78,14 +76,19 @@ const WeatherComponent = () => {
       <div className='weather-card-container'>
   {
     weatherData.map(function (temp, idx) {
-      return (
-        <div className='weather-small-card' key={idx}>
-          <img src={getImageUrl(temp['weather'])} alt={temp['weather']} />
-          <p>{idx===0 ? "Today": moment().add(idx, 'days').format('dddd')}</p>
-          <p>Max: {temp['temp_max']}°C</p>
-          <p>Min: {temp['temp_min']}°C</p>
-        </div>
-      )
+        if (idx !== 0) {
+            return (
+                <div className='weather-small-card' key={idx}>
+                <img src={getImageUrl(temp['weather'])} alt={temp['weather']} />
+                <p>{idx===0 ? "Today": moment().add(idx, 'days').format('dddd')}</p>
+                <p>Max: {temp['temp_max']}°C</p>
+                <p>Min: {temp['temp_min']}°C</p>
+                </div>
+            )
+        }
+        else {
+            return null;
+        }
     })
   }
 </div>
@@ -94,4 +97,3 @@ const WeatherComponent = () => {
 }
 
 export default WeatherComponent
-
